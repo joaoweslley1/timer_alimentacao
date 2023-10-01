@@ -29,15 +29,14 @@ def gera_user():
                     key=str(num)+'name',
                     background_color='gray7')
                     ],
-            [sg.Text('Tempo: 00:05',
+            [sg.Text('Tempo: 15:00',        # TEMPO
                     size=(20,1),
                     justification='left', 
                     key=str(num)+'counter',
                     background_color='gray7')
                     ],
                     ]
-        
-        #parte 2 da coluna 2 (Botão de Excluir)
+
         coluna2b=[
             [sg.Button('X', size=(1,1),
                        key=str(num)+'Exit',
@@ -45,12 +44,14 @@ def gera_user():
                        ]
                        ]
 
+        # layout de de saída (LayOut)
         lo=[sg.Column(coluna2a,key=str(num),background_color='grey9'),
-            sg.Column(coluna2b,key=str(num)+'button')] # layout de de saída (LayOut)
+            sg.Column(coluna2b,key=str(num)+'button')] 
 
         return lo
 
-    # COLUNA PRINCIPAL QUE ARAMZENA O NOME E O TIMER
+
+    # COLUNA QUE ARAMZENA O NOME E O TIMER
     coluna1=[
         [sg.Text('Insira um nome:',
                  key='Texto1',
@@ -65,14 +66,17 @@ def gera_user():
                    button_color='gray1')]
     ]
 
+
     # COLUNA VAZIA QUE RECEBERÁ OS NOMES COM TIMER GERADOS COM A FUNÇÃO GERA_COLUNA
     coluna2=[] 
+
 
     # COLUNAS AUXILIARES
     coluna_fillL=[[sg.Text('',background_color='gray10')]] # preenchimento para alinhamento esquerdo (Left)
     coluna_fillR=[[sg.Text('',background_color='gray10')]] # preenchimento para alinhamento direito (Right)
 
 
+    # LAYOUT FINAL
     layout=[[
         sg.Column(coluna_fillL,
                   expand_x=True,
@@ -93,12 +97,16 @@ def gera_user():
                 )
     ]]
 
+
+    # CRIAÇAO DA JANELA
     window=sg.Window('Temporizador',
                      layout,
                      background_color='gray10',
                      element_justification='center',
                      size=(600,300))
 
+
+    # WHILE TRUE
     while True:
         event,values=window.read(timeout=1000)
 
@@ -114,30 +122,35 @@ def gera_user():
             counter_rows+=1
         
         if 'Exit' in event:
-            evento=str(event[:-4])                              # salva o numero do evento que foi realizado
+            evento=str(event[:-4])                                  # salva o numero do evento que foi realizado
             window[evento].update(visible=False)                # faz com que o nome referente ao evento fique invisivel
-            window[evento].Widget.master.pack_forget()          # se livra do nome referente ao evento
+            window[evento].Widget.master.pack_forget()              # se livra do nome referente ao evento
             window[evento+'button'].update(visible=False)       # faz com que o botao referente ao evento fique invisivel
-            window[evento+'button'].Widget.master.pack_forget() # se livra do botao referente ao evento
-            window.refresh()    #recarrega a janela
-            window['Col2'].contents_changed()   # recarrega os elementos modificados da coluna 2
-            #added_names.remove(str(window[str(evento)+'name'].get())[6:])       #remove o nome da lista de nomes adicionados
+            window[evento+'button'].Widget.master.pack_forget()     # se livra do botao referente ao evento
+            window.refresh()                                    #recarrega a janela
+            window['Col2'].contents_changed()                       # recarrega os elementos modificados da coluna 2
 
         if event == '__TIMEOUT__':
             for i in range(counter_rows):
                 try:
                     if window[str(i)+'counter'].get() == 'Tempo: 00:00':        # checa se o tempo zerou
-                        nome=str(window[str(i)+'name'].get())[6:]               # salva o nome em uma variável
+                        nome=str(window[str(i)+'name'].get())[6:]                   # salva o nome em uma variável
                         if nome not in clickes:                                 # checa se o botão de remover já foi clicado
-                            window[str(i)+'Exit'].click()                       # realiza o clique o botão de exluir
+                            window[str(i)+'Exit'].click()                           # realiza o clique o botão de exluir
                             clickes.append(nome)                                # registra o clique realizado
+
+                            # JANELA DE AVISO DE TEMPO FINALIZADO
                             sg.Window(
                                 "Aviso", 
-                                [[sg.Text(f'Tempo de {nome} acabou!',size=(20,1))]],
+                                [
+                                    [sg.Text(f'Tempo de {nome} acabou!')
+                                             ]
+                                             ],
                                 element_justification='center',
+                                auto_size_text=True
                                 ).finalize()
                     else:
-                        tempo_restante=window[str(i)+'counter'].get()
+                        tempo_restante=window[str(i)+'counter'].get() # armazena a quantidade de tempo restante
                         tempo_restante=tempo_restante[-5:]
                         tempo_segundos=(int(tempo_restante[:2])*60)+(int((tempo_restante[3:])))
                         tempo_segundos-=1
@@ -145,7 +158,6 @@ def gera_user():
                 except:
                     pass
             
-
     window.close()
 
 if __name__ == '__main__':
